@@ -1,0 +1,24 @@
+{
+  "name": "compi1-py2",
+  "version": "1.0.0",
+  "description": "PY2",
+  "main": "index.js",
+  "dependencies": {
+    "jison": "^0.4.18",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MickysxD/COMPI1-PY2.git"
+  },
+  "author": "Micky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MickysxD/COMPI1-PY2/issues"
+  },
+  "homepage": "https://github.com/MickysxD/COMPI1-PY2#readme"
+}
