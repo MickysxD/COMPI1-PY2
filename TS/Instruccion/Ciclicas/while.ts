@@ -26,7 +26,7 @@ class WhileStatement implements Instruccion{
                 let entorno:Entorno = new Entorno(ent);
                 if(cond){
                     for(let aux of this.instrucciones){
-                        (aux.getData() as Instruccion).ejecutar(entorno,mensajes);
+                        (aux as Instruccion).ejecutar(entorno,mensajes);
                     }
                 }else{
                     break;

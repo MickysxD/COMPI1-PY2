@@ -31,7 +31,7 @@ class IfStatment implements Instruccion{
                 aux=this.sentenciasElse;
             }
             for(let x of aux){
-                (aux.getData() as Instruccion).ejecutar(entorno,mensajes)
+                (x as Instruccion).ejecutar(entorno,mensajes)
             }
         }else{
             mensajes.push(new NodoError("Sentencia if no recibe booleano", this.fila, this.columna))

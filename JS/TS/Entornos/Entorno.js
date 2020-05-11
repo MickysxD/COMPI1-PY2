@@ -5,6 +5,13 @@ var Entorno = /** @class */ (function () {
         this.padre = padre;
         this.variables = [];
     }
+    Entorno.prototype.getEntornoGlobal = function () {
+        var ent = this;
+        while (ent.padre != null) {
+            ent = ent.padre;
+        }
+        return ent;
+    };
     Entorno.prototype.get = function (id) {
         var tmp = this;
         while (tmp != null) {
@@ -16,7 +23,7 @@ var Entorno = /** @class */ (function () {
             }
             tmp = tmp.padre;
         }
-        return null;
+        return tmp;
     };
     Entorno.prototype.put = function (simbolo) {
         for (var _i = 0, _a = this.variables; _i < _a.length; _i++) {

@@ -15,13 +15,12 @@ var TipoAritmetico;
 })(TipoAritmetico || (TipoAritmetico = {}));
 exports.TipoAritmetico = TipoAritmetico;
 var Aritmetico = /** @class */ (function () {
-    function Aritmetico(der, fila, columna, izq, operacion, unario) {
-        this.opDer = der;
+    function Aritmetico(opDer, fila, columna, opIzq, operacion) {
+        this.opIzq = opIzq;
+        this.opDer = opDer;
+        this.tipoOperacion = operacion;
         this.fila = fila;
         this.columna = columna;
-        this.opIzq = izq;
-        this.tipoOperacion = operacion;
-        this.unario = unario;
     }
     Aritmetico.prototype.getValor = function (entorno, mensajes) {
         var valIzq = this.opIzq.getValor(entorno, mensajes);
@@ -37,7 +36,7 @@ var Aritmetico = /** @class */ (function () {
                 return valDer.getValor() * -1;
             }
             else {
-                mensajes.push(new NodoError_1.NodoError("Error de tipo con->" + valDer.getValor(), this.fila, this.columna));
+                mensajes.push(new NodoError_1.NodoError("Error de tipo con->" + valDer, this.fila, this.columna));
                 return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
@@ -50,7 +49,13 @@ var Aritmetico = /** @class */ (function () {
                     return new Double_1.Double(valIzq.getValor() + valDer.getValor());
                 }
                 else {
-                    return valIzq.toString() + valDer.toString();
+                    if (valIzq == null || valDer == null) {
+                        mensajes.push(new NodoError_1.NodoError("No es posible sumar null" + valDer, this.fila, this.columna));
+                        return new ErrorSimbolico_1.ErrorSimbolico();
+                    }
+                    else {
+                        return valIzq.toString() + valDer.toString();
+                    }
                 }
             }
             else if (this.tipoOperacion == TipoAritmetico.RESTA) {
@@ -61,7 +66,7 @@ var Aritmetico = /** @class */ (function () {
                     return new Double_1.Double(valIzq.getValor() - valDer.getValor());
                 }
                 else {
-                    mensajes.push(new NodoError_1.NodoError("Operacion resta no soportada " + valDer.getValor(), this.fila, this.columna));
+                    mensajes.push(new NodoError_1.NodoError("Operacion resta no soportada " + valDer, this.fila, this.columna));
                     return new ErrorSimbolico_1.ErrorSimbolico();
                 }
             }
@@ -73,7 +78,7 @@ var Aritmetico = /** @class */ (function () {
                     return new Double_1.Double(valIzq.getValor() * valDer.getValor());
                 }
                 else {
-                    mensajes.push(new NodoError_1.NodoError("Operacion multiplicacion no soportada " + valDer.getValor(), this.fila, this.columna));
+                    mensajes.push(new NodoError_1.NodoError("Operacion multiplicacion no soportada " + valDer, this.fila, this.columna));
                     return new ErrorSimbolico_1.ErrorSimbolico();
                 }
             }
@@ -88,7 +93,7 @@ var Aritmetico = /** @class */ (function () {
                     }
                 }
                 else {
-                    mensajes.push(new NodoError_1.NodoError("Operacion division no soportada " + valDer.getValor(), this.fila, this.columna));
+                    mensajes.push(new NodoError_1.NodoError("Operacion division no soportada " + valDer, this.fila, this.columna));
                     return new ErrorSimbolico_1.ErrorSimbolico();
                 }
             }
@@ -100,7 +105,7 @@ var Aritmetico = /** @class */ (function () {
                     return new Double_1.Double(valIzq.getValor() ^ valDer.getValor());
                 }
                 else {
-                    mensajes.push(new NodoError_1.NodoError("Operacion elevacion no soportada " + valDer.getValor(), this.fila, this.columna));
+                    mensajes.push(new NodoError_1.NodoError("Operacion elevacion no soportada " + valDer, this.fila, this.columna));
                     return new ErrorSimbolico_1.ErrorSimbolico();
                 }
             }
@@ -112,9 +117,13 @@ var Aritmetico = /** @class */ (function () {
                     return new Double_1.Double(valIzq.getValor() % valDer.getValor());
                 }
                 else {
-                    mensajes.push(new NodoError_1.NodoError("Operacion mod no soportada " + valDer.getValor(), this.fila, this.columna));
+                    mensajes.push(new NodoError_1.NodoError("Operacion mod no soportada " + valDer, this.fila, this.columna));
                     return new ErrorSimbolico_1.ErrorSimbolico();
                 }
+            }
+            else {
+                mensajes.push(new NodoError_1.NodoError("La operacion no exites", this.fila, this.columna));
+                return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
     };

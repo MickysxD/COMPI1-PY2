@@ -3,6 +3,7 @@ import { Entorno } from "../../Entornos/Entorno";
 import { ListType, ExpType } from "../../Entornos/NodoAST";
 import { NodoError } from "../../Estructuras/NodoError";
 import { ErrorSimbolico } from "../../Estructuras/ErrorSimbolico";
+import { Simbolo } from "../../Entornos/Simbolo";
 
 
 class ID implements Expresion{
@@ -17,12 +18,12 @@ class ID implements Expresion{
     }
 
     getValor(ent:Entorno, mensajes:ListType[]) :ExpType{
-        let valor = ent.get(this.id);
+        let valor:Simbolo = ent.get(this.id);
         if(valor != null){
             mensajes.push(new NodoError("No existe la variable",this.fila, this.columna));
             return new ErrorSimbolico();
         }
-        return valor.getValue();
+        return valor;
     }
 }
 

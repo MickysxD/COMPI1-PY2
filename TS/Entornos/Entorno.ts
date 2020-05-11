@@ -27,7 +27,7 @@ class Entorno{
             }
             tmp = tmp.padre;
         }
-        return null;
+        return tmp;
     }
 
     public put(simbolo:Simbolo):boolean{

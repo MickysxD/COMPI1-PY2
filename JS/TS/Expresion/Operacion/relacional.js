@@ -36,6 +36,7 @@ var Relacional = /** @class */ (function () {
             }
             else {
                 mensajes.push(new NodoError_1.NodoError("Error en el operador >", this.fila, this.columna));
+                return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
         else if (this.tipoOperacion == TipoRelacional.MENOR) {
@@ -44,6 +45,7 @@ var Relacional = /** @class */ (function () {
             }
             else {
                 mensajes.push(new NodoError_1.NodoError("Error en el operador <", this.fila, this.columna));
+                return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
         else if (this.tipoOperacion == TipoRelacional.MAYORIGUAL) {
@@ -52,6 +54,7 @@ var Relacional = /** @class */ (function () {
             }
             else {
                 mensajes.push(new NodoError_1.NodoError("Error en el operador >=", this.fila, this.columna));
+                return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
         else if (this.tipoOperacion == TipoRelacional.MENORIGUAL) {
@@ -60,23 +63,18 @@ var Relacional = /** @class */ (function () {
             }
             else {
                 mensajes.push(new NodoError_1.NodoError("Error en el operador <=", this.fila, this.columna));
+                return new ErrorSimbolico_1.ErrorSimbolico();
             }
         }
         else if (this.tipoOperacion == TipoRelacional.IGUALIGUAL) {
-            if (valIzq != null && valDer != null) {
-                return valIzq.toString() == valDer.toString();
-            }
-            else {
-                return valIzq == valDer;
-            }
+            return valIzq == valDer;
         }
         else if (this.tipoOperacion == TipoRelacional.DIFERENTE) {
-            if (valIzq != null && valDer != null) {
-                return valIzq.toString() != valDer.toString();
-            }
-            else {
-                return valIzq != valDer;
-            }
+            return valIzq != valDer;
+        }
+        else {
+            mensajes.push(new NodoError_1.NodoError("Error operador no existe", this.fila, this.columna));
+            return new ErrorSimbolico_1.ErrorSimbolico();
         }
     };
     return Relacional;

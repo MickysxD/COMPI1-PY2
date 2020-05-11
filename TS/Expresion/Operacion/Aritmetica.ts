@@ -11,15 +11,15 @@ enum TipoAritmetico{
 }
 
 class Aritmetico implements Expresion{
-    opIzq?:Expresion;
+    opIzq:Expresion;
     opDer:Expresion;
     unario:boolean;
-    tipoOperacion?:TipoAritmetico;
+    tipoOperacion:TipoAritmetico;
     fila:number;
     columna:number;
     
 
-    constructor(opDer:Expresion, fila:number, columna:number, opIzq?:Expresion, operacion?:TipoAritmetico,){
+    constructor(opDer:Expresion, fila:number, columna:number, opIzq?:Expresion, operacion?:TipoAritmetico){
         this.opIzq = opIzq;
         this.opDer = opDer;
         this.tipoOperacion = operacion;

@@ -38,3 +38,4 @@ var Logico = /** @class */ (function () {
     };
     return Logico;
 }());
+exports.Logico = Logico;

@@ -14,7 +14,7 @@ var ID = /** @class */ (function () {
             mensajes.push(new NodoError_1.NodoError("No existe la variable", this.fila, this.columna));
             return new ErrorSimbolico_1.ErrorSimbolico();
         }
-        return valor.getValue();
+        return valor;
     };
     return ID;
 }());
