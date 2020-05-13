@@ -1,9 +1,8 @@
 
-console.log("ptos")
+//console.log("ptos")
 
 const parser = require("./analizador").parser;
-
-let entrada = "for  \n%";
+let entrada = "for$";
 let response = parser.parse(entrada);
 //let respo = response.recorrer();
 console.log(response);

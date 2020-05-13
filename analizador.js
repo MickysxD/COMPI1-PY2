@@ -72,12 +72,12 @@
   }
 */
 var analizador = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,3];
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,4];
 var parser = {trace: function trace () { },
 yy: {},
-symbols_: {"error":2,"S":3,"SENTENCIAS":4,"EOF":5,"TK_FOR":6,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"TK_FOR"},
-productions_: [0,[3,2],[4,1],[4,2]],
+symbols_: {"error":2,"S":3,"SENTENCIAS":4,"EOF":5,"SENTENCIA":6,"TK_FOR":7,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",7:"TK_FOR"},
+productions_: [0,[3,2],[4,2],[4,1],[6,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -87,12 +87,15 @@ case 1:
 return $$[$0-1];
 break;
 case 2:
+this.$ = $$[$0-1]+$$[$0]
+break;
+case 3: case 4:
 this.$ = $$[$0]
 break;
 }
 },
-table: [{3:1,4:2,6:$V0},{1:[3]},{4:5,5:[1,4],6:$V0},o([5,6],[2,2]),{1:[2,1]},{4:5,5:[2,3],6:$V0}],
-defaultActions: {4:[2,1]},
+table: [{3:1,4:2,6:3,7:$V0},{1:[3]},{5:[1,5]},{4:6,5:[2,3],6:3,7:$V0},o([5,7],[2,4]),{1:[2,1]},{5:[2,2]}],
+defaultActions: {5:[2,1],6:[2,2]},
 parseError: function parseError (str, hash) {
     if (hash.recoverable) {
         this.trace(str);
@@ -651,7 +654,7 @@ case 39:return 'TK_WHILE';
 break;
 case 40:return 'TK_DO';
 break;
-case 41:return 6;
+case 41:return 7;
 break;
 case 42:return 'TK_CONTINUE';
 break;

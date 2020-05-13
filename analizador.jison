@@ -114,9 +114,11 @@
 S: SENTENCIAS EOF     {return $1;}
 ;
 
-SENTENCIAS: TK_FOR {$$ = $1}
-          /*| SENTENCIAS /*{return $1;}*/
-          | SENTENCIAS SENTENCIAS 
+SENTENCIAS: SENTENCIA SENTENCIAS {$$ = $1+$2}
+          | SENTENCIA {$$ = $1}
+;
+
+SENTENCIA: TK_FOR  {$$ = $1}
 ;
 
 /*
