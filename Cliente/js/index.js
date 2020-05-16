@@ -1,22 +1,36 @@
+//import {AST} from "../../Servidor/JS/TS/Entornos/AST";
+//import NodoAST from "../../Servidor/JS/TS/Entornos/NodoAST";
+//var AST = __importStar(require("../../Servidor/JS/TS/Entornos/AST"));
+//__importStar(require("body-parser"))
+var AST = import("../Entornos/AST")
+
 //lo de go
 function conect(entrada){
     var texto = document.getElementById(entrada).value;
     var salida = document.getElementById('txtConsola');
     if (texto != null && texto != "") {
-        salida.value += texto;
+        salida.value = texto + " conectando...\n";
     }
+    
+    var url = "http://localhost:8080/Analizar/";
 
-    var url = "http://localhost:8080/Calcular/";
-
-    $.post(url,{text:texto},function(data,status){
-        if(status.toString() == "succes"){
-            alert("el resultado es"+data.toString());
+    $.post(url,{text:texto},function(data, status){
+        if(status.toString() == "success"){
+            salida.value += "respuesta...\n";
+            var a = data instanceof AST;
+            salida.value += a+"\n";
+            for(let x of data.instrucciones){
+                salida.value += x+"\n";
+            }
+            salida.value += data + " finalizado...\n";
         }else{
-            alert("Error:"+status);
+            salida.value += "Error servidor 8000: "+status;
         }
     });
 }
 
+
+//pestanas
 var contador=0;
 function get_cont(){
     return contador++;
@@ -87,7 +101,7 @@ function index(pestanias, pestania) {
             value: tact.value,
             matchBrackets: true,
             styleActiveLine: true,
-            theme: "eclipse",
+            theme: "3024-night",
             mode: "text/x-java"
         }).on('change', editor => {
             tact.value=editor.getValue();
@@ -129,7 +143,7 @@ function agregar() {
         value: tact.value,
         matchBrackets: true,
         styleActiveLine: true,
-        theme: "eclipse",
+        theme: "3024-night",
         mode: "text/x-java"
     }).on('change', editor => {
         tact.value=editor.getValue();
@@ -166,7 +180,7 @@ function AbrirArchivo(files){
             value: tact.value,
             matchBrackets: true,
             styleActiveLine: true,
-            theme: "eclipse",
+            theme: "3024-night",
             mode: "text/x-java"
         }).on('change', editor => {
             tact.value=editor.getValue();
@@ -212,49 +226,4 @@ function DescargarArchivo(){
             window.URL.revokeObjectURL(url);  
         },0); 
     }
-}
-
-function carga(){
-    try {
-        var act=document.getElementById('consola');
-        var tact=document.getElementById('txtConsola');
-
-        var editor=CodeMirror(act, {
-            lineNumbers: true,
-            value: "",
-            matchBrackets: true,
-            styleActiveLine: true,
-            theme: "eclipse",
-            mode: "text/x-java",
-            id: 'txtConsola',
-            name: 'txtConsola'
-        });
-
-        tact.onchange(tact => {
-            editor.value = tact.value;
-        });
-
-        tact.value += "ptos";
-
-    }catch(error) {
-
-
-    }
-
-
-/*
-
-    var act=document.getElementById('cpestana'+x);
-    var tact=document.getElementById('textarea'+x);
-    var editor=CodeMirror(act, {
-        lineNumbers: true,
-        value: tact.value,
-        matchBrackets: true,
-        styleActiveLine: true,
-        theme: "eclipse",
-        mode: "text/x-java"
-    }).on('change', editor => {
-        tact.value=editor.getValue();
-    });
-*/
 }

@@ -50,7 +50,7 @@ body {
     float: left;
     text-align: center;
     margin: 0px 2px -2px -0px;
-    background: #22556e;
+    background: #5DC88C;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border: 2px solid rgb(0, 0, 0);
@@ -109,4 +109,30 @@ body {
     border-top-left-radius: 0px;
     border: 2px solid rgb(0, 112, 163);
     width: 1025px;
+}
+
+
+html {
+    margin:0;
+    padding:0;
+    font-size:100%;
+}
+
+.body2 {
+    max-width:800px;
+    min-width:300px;
+    margin:0 auto;
+    padding:20px 10px;
+    font-size:14px;
+    font-size:1.4em;
+}
+
+h1 {
+    font-size:1.8em;
+}
+
+.demo {
+    overflow:auto;
+    background: white;
+    border:1px solid silver;
 }

@@ -9,19 +9,23 @@
 
         <script src="../codemirror/lib/codemirror.js"></script>
         <link rel="stylesheet" href="../codemirror//lib//codemirror.css">
-        <link rel="stylesheet" href="../codemirror//theme//eclipse.css">
+        <link rel="stylesheet" href="../codemirror//theme//3024-night.css">
         <script src="../codemirror/mode/clike/clike.js"></script>
+
+        <link rel="stylesheet" href="../dist/themes/default/style.min.css" />
+
         <title>Practica 2</title>
     </head>
 
     <body>
-        
-        <div class="contenedor">
-            <input id="fileInput" title="Abrir" type="file" size="50" onchange="AbrirArchivo(this.files)" class="btnp">
+        <div class="contenedor" id="menu">
             <button onclick="DescargarArchivo();" id="guardar" title="Guardar" class="btnp">Guardar</button>
             <button onclick="agregar();" title="AgregarPestana" id="btn4" class="btnp">Agregar Pestana</button>
             <button onclick="quitar();" title="QuitarPestana" id="btn5" class="btnp">Quitar Pestana</button>
+            <input id="fileInput" title="Abrir" type="file" size="50" onchange="AbrirArchivo(this.files)" class="btnp">
+        </div>
 
+        <div class="contenedor" id="p">
             <h2>Analisis</h2>
             <div id="pestanas">
                 <ul id=lista>
@@ -39,11 +43,76 @@
             
         </div>
 
-        <div class="contenedor" id="consola" onload="carga()">
-            <h3>Tabla</h3>
+        <div class="contenedor" id="consola">
+            <h3>Consola</h3>
             <textarea id="txtConsola" name="txtConsola" class="ta" cols=130 rows=30 readonly></textarea>
-            
+        </div>
+    
+        <div class="contenedor" id="tree">
+
+            <h1>Reporte AST</h1>
+            <div id="html" class="demo">
+                <ul>
+                    <li data-jstree='{ "opened" : true }'>Raiz
+                        <ul>
+                            <li data-jstree='{ "opened" : true }'>Lista Espresion
+                            <ul>
+                                <li data-jstree='{ "opened" : true }'>Expresion
+                                <ul>
+                                    <li data-jstree='{ "opened" : true }'>Aritmetica
+                                        <ul>
+                                    <li>Primitivo</li>
+                                    <li>Primitivo</li>
+                                </ul>
+                                    </li>
+                                </ul>
+                                </li>
+                            </ul>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li data-jstree='{ "opened" : true }'>Lista Instruccion
+                            <ul>
+                                <li data-jstree='{ "opened" : true }'>Instruccion
+                                <ul>
+                                    <li data-jstree='{ "opened" : true }'>Imprimir
+                                        <ul>
+                                            <li data-jstree='{ "opened" : true }'>Lista Espresion
+                                            <ul>
+                                                <li data-jstree='{ "opened" : true }'>Expresion
+                                                <ul>
+                                                    <li data-jstree='{ "opened" : true }'>Aritmetica
+                                                        <ul>
+                                                    <li>Primitivo</li>
+                                                    <li>Primitivo</li>
+                                                </ul>
+                                                    </li>
+                                                </ul>
+                                                </li>
+                                            </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                </li>
+                            </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <script src="../dist/jstree.min.js"></script>
+
+            <script>
+            $('#html').jstree();
+            </script>
+
+            <script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+
         </div>
 
     </body>
+
 </html>
