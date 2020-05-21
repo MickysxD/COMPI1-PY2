@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"Servidor/JS/TS"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +16,6 @@ func main() {
 	http.Handle("/codemirror/", http.StripPrefix("/codemirror/", http.FileServer(http.Dir("codemirror/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js/"))))
 	http.Handle("/dist/", http.StripPrefix("/dist/", http.FileServer(http.Dir("dist/"))))
-	http.Handle("/TS/", http.StripPrefix("/TS/", http.FileServer(http.Dir("././Servidor/JS/TS/"))))
 
 	http.HandleFunc("/", index)
 

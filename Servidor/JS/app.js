@@ -11,27 +11,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //import * as cors from "cors";
 var bodyParser = __importStar(require("body-parser"));
 var analizador = __importStar(require("../analizador"));
-//import {AST} from "../TS/Entornos/AST";
-//import { Instruccion } from "../TS/Instruccion/Instruccion";
-//import { Asignacion } from "../TS/Instruccion/CambioValor/Asignacion";
-//import { NodoAST } from "../TS/Entornos/NodoAST";
 var express = require('express');
 var cors = require('cors');
 var app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
+var primero;
+var segundo;
+var p = false;
 app.post('/Analizar', function (data, status) {
     var entrada = data.body.text;
     var resultado = parser(entrada);
-    //var res:NodoAST[] = resultado.instrucciones;
-    //console.log(res.length)
-    for (var _i = 0, _a = resultado.instrucciones; _i < _a.length; _i++) {
-        var x = _a[_i];
-        console.log(x);
-        //status.send(x);
-    }
-    status.send(resultado);
+    /*
+    if(primero == null){
+        primero = resultado;
+    }else if(segundo == null){
+        segundo = resultado;
+
+        resultado.reporte = verificar();
+
+        primero = null;
+        segundo = null;
+    }*/
+    var json = JSON.stringify(resultado, null, 2);
+    console.log(json);
+    json = json.split('lexema').join('text').split('lista').join('children').split('lista').join('children');
+    console.log(json);
+    status.send(json);
 });
 var server = app.listen(8080, function () {
     console.log('Servidor 8080 listo...');
@@ -43,4 +50,7 @@ function parser(texto) {
     catch (e) {
         return "Error en el analizador servidor 80 80: " + e.toString();
     }
+}
+function verificar() {
+    return null;
 }

@@ -18,6 +18,13 @@ body {
     transition: all 500ms ease;
 }
 
+.contenedor2{
+    width: 1080px;
+    margin: auto;
+    padding: 20px 15px 50px 50px;
+    border-radius: 10px;
+}
+
 .contenedor{
     width: 1080px;
     margin: auto;
@@ -28,11 +35,32 @@ body {
     box-shadow: 0 10px 10px 0px rgba(0, 0, 0, 0.8);
 }
 
-.contenedor .titulo{
+.contenedor .titulo .contenedor2{
     font-size: 3.5ex;
     font-weight: bold;
     margin-left: 10px;
     margin-bottom: 10px;
+}
+
+td, td {
+    border: black 1px solid;
+    width: auto;
+    height: auto;
+}
+
+#div{
+    overflow:scroll;
+    width: 970px;
+    max-width: 970px;
+    max-height: 500px;
+}
+
+table {
+    background: white;
+    border: black 1.5px solid;
+    width: 950px;
+    height: 200px auto;
+    text-align: center;
 }
 
 #pestanas {
@@ -65,7 +93,7 @@ body {
 
 #contenidopestanas{
     clear: both;
-    background: dimgray;
+    background: black;
     padding: 20px 0px 20px 20px;
     border-radius: 5px;
     border-top-left-radius: 0px;
@@ -116,15 +144,8 @@ html {
     margin:0;
     padding:0;
     font-size:100%;
-}
-
-.body2 {
-    max-width:800px;
-    min-width:300px;
-    margin:0 auto;
-    padding:20px 10px;
-    font-size:14px;
-    font-size:1.4em;
+    width: auto;
+    height: auto;
 }
 
 h1 {

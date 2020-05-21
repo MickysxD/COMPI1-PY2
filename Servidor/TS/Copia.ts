@@ -1,0 +1,7 @@
+
+class Copia{
+
+
+}
+
+export { Copia }

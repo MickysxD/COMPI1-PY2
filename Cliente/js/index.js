@@ -1,34 +1,66 @@
 //import {AST} from "../../Servidor/JS/TS/Entornos/AST";
 //import NodoAST from "../../Servidor/JS/TS/Entornos/NodoAST";
-//var AST = __importStar(require("../../Servidor/JS/TS/Entornos/AST"));
+//var AST = require("../../Servidor/JS/TS/Entornos/AST"));
 //__importStar(require("body-parser"))
-var AST = import("../Entornos/AST")
+//var AST = import("../Servidor/JS/TS/Entornos/AST")
+//var AST = require("../../Servidor/JS/TS/Entornos/AST");
 
 //lo de go
 function conect(entrada){
     var texto = document.getElementById(entrada).value;
-    var salida = document.getElementById('txtConsola');
     if (texto != null && texto != "") {
-        salida.value = texto + " conectando...\n";
+        console.log( texto + " conectando...\n");
     }
     
     var url = "http://localhost:8080/Analizar/";
 
     $.post(url,{text:texto},function(data, status){
         if(status.toString() == "success"){
-            salida.value += "respuesta...\n";
-            var a = data instanceof AST;
-            salida.value += a+"\n";
-            for(let x of data.instrucciones){
-                salida.value += x+"\n";
-            }
-            salida.value += data + " finalizado...\n";
+            $('#ast').jstree("destroy");
+            console.log( "respuesta...\n");
+            console.log( data + "\n");
+
+            tree(data);
+
+            console.log(" finalizado...\n");
         }else{
-            salida.value += "Error servidor 8000: "+status;
+            console.log( "Error servidor 8000: "+status);
         }
     });
 }
 
+function tree(info){
+    var json = JSON.parse(info);
+    
+    $('#ast').on('changed.jstree', function (e, data) {
+            var nodo = data.instance.get_node(data.selected);
+    }).jstree({
+        core: {
+            data: json
+        }
+    });
+
+}
+
+/* backup
+function tree(info){
+    var json = 
+    JSON.parse(info);
+    ;
+    
+    $('#ast')
+      .on('changed.jstree', function (e, data) {
+        var nodo = data.instance.get_node(data.selected);
+        $('#jstree-result').html('Selected: <br/><strong>' + nodo.id+'-'+nodo.text+'</strong>');
+      })
+      .jstree({
+      core: {
+        data: json
+      }
+    });
+
+}
+*/
 
 //pestanas
 var contador=0;
