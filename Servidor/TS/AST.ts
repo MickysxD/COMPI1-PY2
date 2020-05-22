@@ -8,7 +8,7 @@ class AST{
     lexema:string;
     lista:NodoAST[];
     errores:Error[];
-    reporte:Copia = new Copia();
+    reporte?:Copia[];
 
     constructor(id:number, lexema:string, lista:NodoAST[], errores:Error[]){
         this.id = id;

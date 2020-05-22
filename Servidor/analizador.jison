@@ -89,7 +89,7 @@
 
 
 //Terminacion y erroes
-.                           {errores.push(new Error.Error(er++, yytext, "Lexico", yytext + " no pertenece al lenguaje", yylloc.first_line, yylloc.first_column));}
+.                           {errores.push(new Error.Error(er++, yytext, "Lexico", "No pertenece al lenguaje", yylloc.first_line, yylloc.first_column));}
 <<EOF>>                     return 'EOF';
 
 
@@ -117,10 +117,6 @@
 
 %%
 
-/*
-para erroes sintacticos    error              {errores.push(new Error.Error(er, $1, "Sintactico", @1.first_line, @1.first_column); er++;}
-*/
-
 //Comienzo
 S: PRIMERO EOF     {id = 0; er = 0; errores = []; return $1;}
 ;
@@ -128,8 +124,8 @@ S: PRIMERO EOF     {id = 0; er = 0; errores = []; return $1;}
 PRIMERO: SENTENCIAS     {$$ = new AST.AST(id++, "AST", $1, errores);}
 ;
 
-ERR: error '}'              {$$ = new Error.Error(er++, $1, "Sintactico", $2, @1.first_line, @1.first_column);}
-   | error ';'              {$$ = new Error.Error(er++, $1, "Sintactico", $2, @1.first_line, @1.first_column);}
+ERR: error '}'              {$$ = new Error.Error(er++, $2, "Sintactico", $1.yyreport_syntax_error, @1.first_line, @1.first_column);}
+   | error ';'              {$$ = new Error.Error(er++, $2, "Sintactico", $1.yyreport_syntax_error, @1.first_line, @1.first_column);}
 ;
 
 //Listado de senetencias
@@ -175,10 +171,10 @@ TODO: COMENTARIOS       {$$ = new NodoAST.NodoAST( id++, "Comentario", @1.first_
 ;
 
 //Creacion de metodos funicones o main
-METODO: TK_VOID TK_ID '(' PARAMETROSGENERAL ')' '{' TODOGENERAL '}'  {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $4, $7];}
-      | TK_VOID TK_ID '(' PARAMETROSGENERAL ')' '{' '}'              {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $4];}
-      | TK_VOID TK_ID '(' ')' '{' TODOGENERAL '}'                    {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $6];}
-      | TK_VOID TK_ID '(' ')' '{' '}'                                {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, [])];}
+METODO: VOID TK_ID '(' PARAMETROSGENERAL ')' '{' TODOGENERAL '}'  {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $4, $7];}
+      | VOID TK_ID '(' PARAMETROSGENERAL ')' '{' '}'              {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $4];}
+      | VOID TK_ID '(' ')' '{' TODOGENERAL '}'                    {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $6];}
+      | VOID TK_ID '(' ')' '{' '}'                                {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, [])];}
 ;
 
 FUNCION: TIPO TK_ID '(' PARAMETROSGENERAL ')' '{' TODOGENERAL '}'  {$$ = [$1, new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $4, $7];}
@@ -187,8 +183,11 @@ FUNCION: TIPO TK_ID '(' PARAMETROSGENERAL ')' '{' TODOGENERAL '}'  {$$ = [$1, ne
        | TIPO TK_ID '(' ')' '{' '}'                                {$$ = [$1, new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, [])];}
 ;
 
-MAIN: TK_VOID TK_MAIN '(' ')' '{' TODOGENERAL '}'       {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $6];}
-    | TK_VOID TK_MAIN '(' ')' '{' '}'                   {$$ = [new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, [])];}
+MAIN: VOID TK_MAIN '(' ')' '{' TODOGENERAL '}'       {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, []), $6];}
+    | VOID TK_MAIN '(' ')' '{' '}'                   {$$ = [$1,new NodoAST.NodoAST( id++, $2, @1.first_line, @1.first_column, [])];}
+;
+
+VOID: TK_VOID           {$$ = new NodoAST.NodoAST( id++, $1, @1.first_line, @1.first_column, []);}
 ;
 
 //Estructura de creacion de parametros

@@ -6,6 +6,9 @@
 //var AST = require("../../Servidor/JS/TS/Entornos/AST");
 
 //lo de go
+var error;
+var reporte;
+
 function conect(entrada){
     var texto = document.getElementById(entrada).value;
     if (texto != null && texto != "") {
@@ -17,10 +20,12 @@ function conect(entrada){
     $.post(url,{text:texto},function(data, status){
         if(status.toString() == "success"){
             $('#ast').jstree("destroy");
+            $("#infot").html("");
+            $("#copias").html("");
+
             console.log( "respuesta...\n");
             console.log( data + "\n");
 
-            errores(data);
             tree(data);
 
             console.log(" finalizado...\n");
@@ -34,7 +39,13 @@ function tree(info){
     var json = JSON.parse(info);
     
     if(json.errores.length > 0){
-        errores(json)
+        error = json.errores;
+        errores();
+    }
+
+    if(json.reporte.length > 0){
+        reporte = json.reporte;
+        copias();
     }
 
     $('#ast').on('changed.jstree', function (e, data) {
@@ -47,20 +58,43 @@ function tree(info){
 
 }
 
-function errores(json){
-    //asdfasdf
-    $("#infot").on('changed' , function(){
-        for(var i=0; i<json.errores.length; i++){
-            var tr = `<tr>
-                     <td>`+json.errores[i].id+`</td>
-                     <td>`+json.errores[i].texto+`</td>
-                     <td>`+json.errores[i].tipo+`</td>
-                     <td>`+json.errores[i].fila+`</td>
-                     <td>`+json.errores[i].columna+`</td>
-                    </tr>`;
-            $("#cuerpo").append(tr)
-        }
+function errores(){
+    var infot = $('#infot');
+    var data="";
+    
+
+    $.each(error, function(i, k){
+        var tr = `<tr>
+        <td>`+error[i].id+`</td>
+        <td>`+error[i].text+`</td>
+        <td>`+error[i].tipo+`</td>
+        <td>`+error[i].descripcion+`</td>
+        <td>`+error[i].fila+`</td>
+        <td>`+error[i].columna+`</td>
+        </tr>`;
+        data += tr;
+        
     });
+
+    infot.append(data);
+
+}
+
+function copias(){
+    var infot = $('#copias');
+    var data="";
+    
+
+    $.each(reporte, function(i, k){
+        var tr = `<tr>
+        <td>`+reporte[i].tipo+`</td>
+        <td>`+reporte[i].descripcion+`</td>
+        </tr>`;
+        data += tr;
+        
+    });
+
+    infot.append(data);
 
 }
 

@@ -12,31 +12,38 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended:true }));
 
-var primero:AST;
-var segundo:AST;
+var primero:AST = null;
+var segundo:AST = null;
 var p = false;
 
 app.post('/Analizar', function (data, status){
     var entrada = data.body.text;
     var resultado = parser(entrada);
 
-    /*
-    if(primero == null){
+    if(primero == null || primero == undefined){
+        console.log("PRIMERO");
         primero = resultado;
-    }else if(segundo == null){
+        resultado.reporte = [];
+    }else if(segundo == null || segundo == undefined){
+        console.log("SEGUNDO");
         segundo = resultado;
 
         resultado.reporte = verificar();
 
+        var json1 = JSON.stringify(primero,null,2);
+        var json2 = JSON.stringify(segundo,null,2);
+        console.log("PRIMERO"+json1);
+        console.log("SEGUNDO"+json2);
+
         primero = null;
         segundo = null;
-    }*/
+    }
 
     var json = JSON.stringify(resultado,null,2);
 
-    console.log(json);
+    //console.log(json);
     json = json.split('lexema').join('text').split('lista').join('children').split('lista').join('children');
-    console.log(json);
+    //console.log(json);
     status.send(json);
 });
 
@@ -52,7 +59,79 @@ function parser(texto:string){
     }
 }
 
-function verificar():Copia{
+function verificar():Copia[]{
+    var lista:Copia[] = [];
+    
+    verificarClases(lista);
 
-    return null;
+    verificarFuncion(lista);
+
+    verificarVariables(lista);
+
+    return lista;
+}
+
+function verificarClases(lista:Copia[]){
+    var descri = "";
+    for(let a of segundo.lista){
+        if(a.lexema == "Clase"){
+            var cantidad = 0;
+            var temp = "";
+            var ca = 0;
+            var cb = 0;
+            var ag = false
+            for(let b of primero.lista){
+                if(b.lexema == "Clase"){
+                    if(a.lista[0].lexema == b.lista[0].lexema){
+                        temp += "CLASE: " + a.lista[0].lexema;
+
+                        for(let aa of a.lista){
+                            if(aa.lexema == "Sentencias"){
+                                for(let aaa of aa.lista){
+                                    if(aaa.lexema == "Funcion" || aaa.lexema == "Metodo" || aaa.lexema == "Main"){
+                                        ca++;
+
+                                        for(let bb of b.lista){
+                                            if(bb.lexema == "Sentencias"){
+                                                cb = 0;
+                                                for(let bbb of bb.lista){
+                                                    if(bbb.lexema == "Funcion" || bbb.lexema == "Metodo" || aaa.lexema == "Main"){
+                                                        cb++;
+                                                        if(bbb.lista[0].lexema == aaa.lista[0].lexema && bbb.lista[1].lexema == aaa.lista[1].lexema){
+                                                            temp += bbb.lista[0].lexema + aaa.lista[0].lexema + bbb.lista[1].lexema + aaa.lista[1].lexema + "/";
+                                                            cantidad++;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        ag = true;
+                    }
+                }
+
+            }
+            if(ca == cb && ca == cantidad && ag){
+                descri += temp + "      \nCANTIDAD M/F: "+ca;
+                lista.push(new Copia("Clase", descri));
+            }
+        }
+    }
+
+}
+
+
+function verificarFuncion(lista:Copia[]){
+
+
+}
+
+
+function verificarVariables(lista:Copia[]){
+
+
 }
