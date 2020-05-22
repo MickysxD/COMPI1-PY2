@@ -18,11 +18,11 @@ function conect(entrada){
     var url = "http://localhost:8080/Analizar/";
 
     $.post(url,{text:texto},function(data, status){
+        $('#ast').jstree("destroy");
+        $("#infot").html("");
+        $("#copias").html("");
+        
         if(status.toString() == "success"){
-            $('#ast').jstree("destroy");
-            $("#infot").html("");
-            $("#copias").html("");
-
             console.log( "respuesta...\n");
             console.log( data + "\n");
 
@@ -38,12 +38,12 @@ function conect(entrada){
 function tree(info){
     var json = JSON.parse(info);
     
-    if(json.errores.length > 0){
+    if(json.errores != undefined && json.errores.length > 0){
         error = json.errores;
         errores();
     }
 
-    if(json.reporte.length > 0){
+    if(json.reporte != undefined && json.reporte.length > 0){
         reporte = json.reporte;
         copias();
     }

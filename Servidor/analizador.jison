@@ -16,7 +16,7 @@
 
 //comentarios
 "//"[^\n]*                      return 'TK_CL';
-"/*"[^"*/"]*"*/"                return 'TK_CM';
+"/*"("*"|"/"|[^"*/"])*"*/"      return 'TK_CM';
 
 //Tipos de datos
 "int"                           return 'TK_INT';
@@ -26,22 +26,22 @@
 "String"                        return 'TK_STRING';
 
 //Tipos de operadores
+"++"                            return '++';
+"--"                            return '--';
 "+"                             return '+';
 "-"                             return '-';
 "*"                             return '*';
 "/"                             return '/';
 "^"                             return '^';
 "%"                             return '%';
-"++"                            return '++';
-"--"                            return '--';
 
 //Tipos de relacionales y logicos
 "=="                            return '==';
 "!="                            return '!=';
-">"                             return '>';
 ">="                            return '>=';
-"<"                             return '<';
+">"                             return '>';
 "<="                            return '<=';
+"<"                             return '<';
 "&&"                            return '&&';
 "||"                            return '||';
 "!"                             return '!';
@@ -55,6 +55,7 @@
 ":"                             return ':';
 ","                             return ',';
 "="                             return '=';
+"."                             return '.';
 
 //Palabras reservadas
 "class"                         return 'TK_CLASS';
@@ -228,6 +229,7 @@ TODODENTRO: COMENTARIOS             {$$ = new NodoAST.NodoAST( id++, "Comentario
           | IF                      {$$ = new NodoAST.NodoAST( id++, "If", @1.first_line, @1.first_column, $1);}
           | BCR                     {$$ = $1;}
           | LLAMADAF                {$$ = new NodoAST.NodoAST( id++, "Llamada funcion", @1.first_line, @1.first_column, [$1]);}
+          | PRINT                   {$$ = new NodoAST.NodoAST( id++, "Print", @1.first_line, @1.first_column, [$1]);}
           | ERR                     {$$ = new NodoAST.NodoAST( id++, "ERROR", @1.first_line, @1.first_column, []); errores.push($1);}
 ;
 
@@ -236,6 +238,9 @@ BCR: TK_BREAK ';'                  {$$ = new NodoAST.NodoAST(id++, $1, @1.first_
    | TK_RETURN SEXPRECION ';'      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$2]);}
 ;
 
+PRINT: TK_SYSTEM '.' TK_OUT '.' TK_PRINT '(' SEXPRECION ')' ';'         {$$ = $7;}
+     | TK_SYSTEM '.' TK_OUT '.' TK_PRINTLN '(' SEXPRECION ')' ';'       {$$ = $7;}
+;
 //Estructura de declaraciones
 DECLARACION: TIPO LISTA '=' EXPRECION ';'        {$1.lista = $2; $$ = [$1, $4];}
            | TIPO LISTA ';'                      {$1.lista = $2; $$ = [$1];}
@@ -272,8 +277,8 @@ VALORES: TK_CD      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_
 ;
 
 //llamada de funciones no implementado
-LLAMADAF: TK_ID '(' SEXPRECION ')'      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$3]);}
-        | TK_ID '(' ')'                 {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
+LLAMADAF: TK_ID '(' SEXPRECION ')' ';'     {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$3]);}
+        | TK_ID '(' ')' ';'                 {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
 ;
 
 //Estructura de asignacion
@@ -296,7 +301,7 @@ CONDICIONES: CONDICION  {$$ = new NodoAST.NodoAST(id++, "Condiciones", @1.first_
 ;
 
 CONDICION: CONDICION C  {$$ = $1; $$.push($2);}
-         | C            {$$ = []; $$.push($1);} 
+         | C            {$$ = [$1];} 
 ;
 
 C: C '&&' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
@@ -323,8 +328,8 @@ C: C '&&' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_
 ITERADORES: ITERADOR    {$$ = new NodoAST.NodoAST(id++, "Iterador", @1.first_line, @1.first_column, $1);}
 ;
 
-ITERADOR: TK_ID '+' '+'   {$$ = [new NodoAST.NodoAST(id++, $1+$2+$3, @1.first_line, @1.first_column, [])];}
-        | TK_ID '-' '-'   {$$ = [new NodoAST.NodoAST(id++, $1+$2+$3, @1.first_line, @1.first_column, [])];}
+ITERADOR: TK_ID '++'   {$$ = [new NodoAST.NodoAST(id++, $1+$2, @1.first_line, @1.first_column, [])];}
+        | TK_ID '--'   {$$ = [new NodoAST.NodoAST(id++, $1+$2, @1.first_line, @1.first_column, [])];}
 ;
 
 

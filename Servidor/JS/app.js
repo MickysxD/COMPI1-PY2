@@ -11,6 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //import * as cors from "cors";
 var bodyParser = __importStar(require("body-parser"));
 var analizador = __importStar(require("../analizador"));
+var AST_1 = require("./TS/AST");
 var Copia_1 = require("./TS/Copia");
 var express = require('express');
 var cors = require('cors');
@@ -24,19 +25,13 @@ var p = false;
 app.post('/Analizar', function (data, status) {
     var entrada = data.body.text;
     var resultado = parser(entrada);
-    if (primero == null || primero == undefined) {
-        console.log("PRIMERO");
+    if (resultado instanceof AST_1.AST && (primero == null || primero == undefined)) {
         primero = resultado;
         resultado.reporte = [];
     }
-    else if (segundo == null || segundo == undefined) {
-        console.log("SEGUNDO");
+    else if (resultado instanceof AST_1.AST && (segundo == null || segundo == undefined)) {
         segundo = resultado;
         resultado.reporte = verificar();
-        var json1 = JSON.stringify(primero, null, 2);
-        var json2 = JSON.stringify(segundo, null, 2);
-        console.log("PRIMERO" + json1);
-        console.log("SEGUNDO" + json2);
         primero = null;
         segundo = null;
     }
@@ -59,12 +54,10 @@ function parser(texto) {
 }
 function verificar() {
     var lista = [];
-    verificarClases(lista);
-    verificarFuncion(lista);
-    verificarVariables(lista);
+    verificarCopia(lista);
     return lista;
 }
-function verificarClases(lista) {
+function verificarCopia(lista) {
     var descri = "";
     for (var _i = 0, _a = segundo.lista; _i < _a.length; _i++) {
         var a = _a[_i];
@@ -95,8 +88,63 @@ function verificarClases(lista) {
                                                     if (bbb.lexema == "Funcion" || bbb.lexema == "Metodo" || aaa.lexema == "Main") {
                                                         cb++;
                                                         if (bbb.lista[0].lexema == aaa.lista[0].lexema && bbb.lista[1].lexema == aaa.lista[1].lexema) {
-                                                            temp += bbb.lista[0].lexema + aaa.lista[0].lexema + bbb.lista[1].lexema + aaa.lista[1].lexema + "/";
                                                             cantidad++;
+                                                            var p1 = true;
+                                                            var p2 = true;
+                                                            for (var _m = 0, _o = aaa.lista; _m < _o.length; _m++) {
+                                                                var aaaa = _o[_m];
+                                                                if (aaaa.lexema == "Parametros") {
+                                                                    p1 = false;
+                                                                    for (var _p = 0, _q = bbb.lista; _p < _q.length; _p++) {
+                                                                        var bbbb = _q[_p];
+                                                                        if (bbbb.lexema == "Parametros") {
+                                                                            p2 = false;
+                                                                            var j = 0;
+                                                                            var listado = "";
+                                                                            if (aaaa.lista.length == bbbb.lista.length) {
+                                                                                for (var i = 0; i < aaaa.lista.length; i++) {
+                                                                                    if (aaaa.lista[i].lexema == bbbb.lista[i].lexema && aaaa.lista[i].lista[0].lexema == bbbb.lista[i].lista[0].lexema) {
+                                                                                        j++;
+                                                                                        listado = "[" + aaaa.lista[i].lexema + "-" + aaaa.lista[i].lista[0].lexema + "]";
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            if (j == aaaa.lista.length) {
+                                                                                lista.push(new Copia_1.Copia("Funcion/Metodo", "CLASE: " + a.lista[0].lexema + "\nNOMBRE: " + bbb.lista[1].lexema + "\nTIPO: " + bbb.lista[0].lexema + "\nPARAMETROS: " + listado));
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else if (aaaa.lexema == "Sentencias") {
+                                                                    for (var _r = 0, _s = bbb.lista; _r < _s.length; _r++) {
+                                                                        var bbbb = _s[_r];
+                                                                        if (bbbb.lexema == "Sentencias") {
+                                                                            for (var _t = 0, _u = aaaa.lista; _t < _u.length; _t++) {
+                                                                                var aaaaa = _u[_t];
+                                                                                if (aaaaa.lexema == "Declaracion") {
+                                                                                    for (var _v = 0, _w = aaaaa.lista[0].lista; _v < _w.length; _v++) {
+                                                                                        var aaaaaa = _w[_v];
+                                                                                        for (var _x = 0, _y = bbbb.lista; _x < _y.length; _x++) {
+                                                                                            var bbbbb = _y[_x];
+                                                                                            if (bbbbb.lexema == "Declaracion") {
+                                                                                                for (var _z = 0, _0 = bbbbb.lista[0].lista; _z < _0.length; _z++) {
+                                                                                                    var bbbbbb = _0[_z];
+                                                                                                    if (bbbbbb.lexema == aaaaaa.lexema && bbbbb.lista[0].lexema == aaaaa.lista[0].lexema) {
+                                                                                                        lista.push(new Copia_1.Copia("Variable", "CLASE: " + a.lista[0].lexema + "\nNOMBRE F/M: " + bbb.lista[1].lexema + "\nTIPO: " + bbbbb.lista[0].lexema + "\nVARIABLE: " + bbbbbb.lexema));
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (p1 && p2) {
+                                                                lista.push(new Copia_1.Copia("Funcion/Metodo", "CLASE: " + a.lista[0].lexema + "\nNOMBRE: " + bbb.lista[1].lexema + "\nTIPO: " + bbb.lista[0].lexema + "\nPARAMETROS: ninguno"));
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -116,8 +164,4 @@ function verificarClases(lista) {
             }
         }
     }
-}
-function verificarFuncion(lista) {
-}
-function verificarVariables(lista) {
 }
