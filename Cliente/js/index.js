@@ -20,6 +20,7 @@ function conect(entrada){
             console.log( "respuesta...\n");
             console.log( data + "\n");
 
+            errores(data);
             tree(data);
 
             console.log(" finalizado...\n");
@@ -32,11 +33,32 @@ function conect(entrada){
 function tree(info){
     var json = JSON.parse(info);
     
+    if(json.errores.length > 0){
+        errores(json)
+    }
+
     $('#ast').on('changed.jstree', function (e, data) {
             var nodo = data.instance.get_node(data.selected);
     }).jstree({
         core: {
             data: json
+        }
+    });
+
+}
+
+function errores(json){
+    //asdfasdf
+    $("#infot").on('changed' , function(){
+        for(var i=0; i<json.errores.length; i++){
+            var tr = `<tr>
+                     <td>`+json.errores[i].id+`</td>
+                     <td>`+json.errores[i].texto+`</td>
+                     <td>`+json.errores[i].tipo+`</td>
+                     <td>`+json.errores[i].fila+`</td>
+                     <td>`+json.errores[i].columna+`</td>
+                    </tr>`;
+            $("#cuerpo").append(tr)
         }
     });
 

@@ -52,6 +52,7 @@
 "{"                             return '{';
 "}"                             return '}';
 ";"                             return ';';
+":"                             return ':';
 ","                             return ',';
 "="                             return '=';
 
@@ -82,14 +83,13 @@
 [0-9]+("."[0-9]+)?                      return 'TK_NM';
 "'"((\\\")|[^"'"])"'"                   return 'TK_CH';
 "true"|"false"                          return 'TK_BOOL';
-[A-Za-z][A-Za-z"_"0-9"."]*["*"]?        return 'TK_IM';
 
 //info a oviar
 [ \r\t\n]+                      {}
 
 
 //Terminacion y erroes
-.                           { /*var e = new Error.Error(er, yytext, "Lexico", yytext + " no pertenece al lenguaje", yylloc.first_line, yylloc.first_column); errores.push(e); er++; return 'TK_ERROR';*/}
+.                           {errores.push(new Error.Error(er++, yytext, "Lexico", yytext + " no pertenece al lenguaje", yylloc.first_line, yylloc.first_column));}
 <<EOF>>                     return 'EOF';
 
 
@@ -122,28 +122,30 @@ para erroes sintacticos    error              {errores.push(new Error.Error(er, 
 */
 
 //Comienzo
-S: PRIMERO EOF     {id = 0; er = 0; erroes = []; return $1;}
+S: PRIMERO EOF     {id = 0; er = 0; errores = []; return $1;}
 ;
 
 PRIMERO: SENTENCIAS     {$$ = new AST.AST(id++, "AST", $1, errores);}
 ;
 
+ERR: error '}'              {$$ = new Error.Error(er++, $1, "Sintactico", $2, @1.first_line, @1.first_column);}
+   | error ';'              {$$ = new Error.Error(er++, $1, "Sintactico", $2, @1.first_line, @1.first_column);}
+;
+
 //Listado de senetencias
-SENTENCIAS: SENTENCIAS SENTENCIA {$$ = $1; $$.push($2);}
-          | SENTENCIA            {$$ = []; $$.push($1);}
-          /*| error '}'            {errores.push(new Error.Error(er, $1, "Sintactico", @1.first_line, @1.first_column)); er++;}
-          /*| error ';'            {errores.push(new Error.Error(er, $1, "Sintactico", @1.first_line, @1.first_column)); er++;}
-          | error                {errores.push(new Error.Error(er, $1, "Sintactico", @1.first_line, @1.first_column)); er++;}*/
+SENTENCIAS: SENTENCIAS SENTENCIA  {$$ = $1; $$.push($2);}
+          | SENTENCIA             {$$ = []; $$.push($1);}
 ;
 
 //Tipo de sentencias principales
 SENTENCIA: CLASS                        {$$ = new NodoAST.NodoAST( id++, "Clase", @1.first_line, @1.first_column, $1);}
          | IMPORT                       {$$ = new NodoAST.NodoAST( id++, "Import", @1.first_line, @1.first_column, $1);}
          | COMENTARIOS                  {$$ = new NodoAST.NodoAST( id++, "Comentario", @1.first_line, @1.first_column, $1);}
+         | ERR                          {$$ = new NodoAST.NodoAST( id++, "ERROR", @1.first_line, @1.first_column, []); errores.push($1);}
 ;
 
 //Sentencias principales no derivables
-IMPORT: TK_IMPORT TK_IM ';'                 {$$ = [new NodoAST.NodoAST(id++, $2, @1.first_line, @1.first_column, [])];}
+IMPORT: TK_IMPORT TK_ID ';'                 {$$ = [new NodoAST.NodoAST(id++, $2, @1.first_line, @1.first_column, [])];}
 ;
 
 COMENTARIOS: TK_CM                      {$$ = [new NodoAST.NodoAST( id++, $1, @1.first_line, @1.first_column, [])];}
@@ -169,6 +171,7 @@ TODO: COMENTARIOS       {$$ = new NodoAST.NodoAST( id++, "Comentario", @1.first_
     | MAIN              {$$ = new NodoAST.NodoAST( id++, "Main", @1.first_line, @1.first_column, $1);}
     | DECLARACION       {$$ = new NodoAST.NodoAST( id++, "Declaracion", @1.first_line, @1.first_column, $1);}
     | ASIGNACION        {$$ = new NodoAST.NodoAST( id++, "Asignacion", @1.first_line, @1.first_column, $1);}
+    | ERR               {$$ = new NodoAST.NodoAST( id++, "ERROR", @1.first_line, @1.first_column, []); errores.push($1);}
 ;
 
 //Creacion de metodos funicones o main
@@ -212,7 +215,7 @@ TODOGENERAL: TODOSDENTRO        {$$ = new NodoAST.NodoAST( id++, "Sentencias", @
 ;
 
 TODOSDENTRO: TODOSDENTRO TODODENTRO       {$$ = $1; $$.push($2);}
-           | TODODENTRO                   {$$ = []; $$.push($1);}
+           | TODODENTRO                   {$$ = [$1];}
 ;
 
 //todo lo que va dentro de metodos funciones o main
@@ -224,6 +227,14 @@ TODODENTRO: COMENTARIOS             {$$ = new NodoAST.NodoAST( id++, "Comentario
           | DO                      {$$ = new NodoAST.NodoAST( id++, "Do while", @1.first_line, @1.first_column, $1);}
           | SWITCH                  {$$ = new NodoAST.NodoAST( id++, "Switch", @1.first_line, @1.first_column, $1);}
           | IF                      {$$ = new NodoAST.NodoAST( id++, "If", @1.first_line, @1.first_column, $1);}
+          | BCR                     {$$ = $1;}
+          | LLAMADAF                {$$ = new NodoAST.NodoAST( id++, "Llamada funcion", @1.first_line, @1.first_column, [$1]);}
+          | ERR                     {$$ = new NodoAST.NodoAST( id++, "ERROR", @1.first_line, @1.first_column, []); errores.push($1);}
+;
+
+BCR: TK_BREAK ';'                  {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
+   | TK_CONTINUE ';'               {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
+   | TK_RETURN SEXPRECION ';'      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$2]);}
 ;
 
 //Estructura de declaraciones
@@ -240,7 +251,7 @@ EXPRECION: EXPRECIONES        {$$ = new NodoAST.NodoAST( id++, "=", @1.first_lin
 ;
 
 EXPRECIONES: EXPRECIONES E   {$$ = $1; $$.push($2);}
-           | E               {$$ = []; $$.push($1);}   
+           | E               {$$ = [$1];}   
 ;
 
 E: E '+' E                  {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
@@ -249,9 +260,9 @@ E: E '+' E                  {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @
  | E '/' E                  {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
  | E '^' E                  {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
  | E '%' E                  {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ //| '-' E %prec UMINUS       {$$ = new NodoAST.NodoAST(id, $1, @1.first_line, @1.first_column, [$2]); id++;}
  | '(' E ')'                {$$ = $2;}
  | VALORES                  {$$ = $1;}
- //| '-' E %prec UMINUS       {$$ = new NodoAST.NodoAST(id, $1, @1.first_line, @1.first_column, [$2]); id++;}
 ;
 
 VALORES: TK_CD      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
@@ -261,6 +272,10 @@ VALORES: TK_CD      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_
        | TK_BOOL    {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
 ;
 
+//llamada de funciones no implementado
+LLAMADAF: TK_ID '(' SEXPRECION ')'      {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$3]);}
+        | TK_ID '(' ')'                 {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []);}
+;
 
 //Estructura de asignacion
 ASIGNACION: TK_ID '=' EXPRECION ';'         {$$ = [new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, []), $3];}
@@ -294,6 +309,12 @@ C: C '&&' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_
  | C '>=' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
  | C '!=' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
  | C '==' C         {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '+' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '-' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '*' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '/' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '^' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
+ | C '%' C          {$$ = new NodoAST.NodoAST(id++, $2, @2.first_line, @2.first_column, [$1, $3]);}
  | '!' C            {$$ = new NodoAST.NodoAST(id++, $1, @1.first_line, @1.first_column, [$2]);}
  | VALORES          {$$ = $1}
  //| EXPRECIONES      {$$ = new NodoAST.NodoAST(id++, "Exprecion", @1.first_line, @1.first_column, $1);}
@@ -309,7 +330,51 @@ ITERADOR: TK_ID '+' '+'   {$$ = [new NodoAST.NodoAST(id++, $1+$2+$3, @1.first_li
 
 
 //estructura de while
-WHILE: TK_WHILE '(' ')' '{' TODOGENERAL '}'        {$$ = [ $5]}
-     | TK_WHILE '(' ')' '{' '}'                    {$$ = []}
+WHILE: TK_WHILE '(' CONDICIONES ')' '{' TODOGENERAL '}'        {$$ = [$3, $6]}
+     | TK_WHILE '(' CONDICIONES ')' '{' '}'                    {$$ = [$3]}
 ;
 
+//estructura do while
+DO: TK_DO '{' TODOGENERAL '}' TK_WHILE '(' CONDICIONES ')' ';'       {$$ = [$3, $7]}
+  | TK_DO '{' '}' TK_WHILE '(' CONDICIONES ')' ';'                   {$$ = [$6]}
+;
+
+
+//estructura if
+IF: TKIF ELSEL        {$$ = $2; $$.unshift($1);}
+  | TKIF              {$$ = [$1];}
+;
+
+TKIF: TK_IF '(' CONDICIONES ')' '{' TODOGENERAL '}'            {$$ = new NodoAST.NodoAST(id++, "if", @1.first_line, @1.first_column, [$3, $6]);}
+    | TK_IF '(' CONDICIONES ')' '{' '}'                        {$$ = new NodoAST.NodoAST(id++, "if", @1.first_line, @1.first_column, [$3]);}
+;
+
+ELSEL: ELSEL ELSE           {$$ = $1; $$.push($2);}
+     | ELSE                 {$$ = [$1];}
+;
+
+ELSE: TK_ELSE TKIF                      {$$ = new NodoAST.NodoAST(id++, "else if", @1.first_line, @1.first_column, $2.lista);}
+    | TK_ELSE '{' TODOGENERAL '}'       {$$ = new NodoAST.NodoAST(id++, "else", @1.first_line, @1.first_column, [$3]);}
+    | TK_ELSE '{' '}'                   {$$ = new NodoAST.NodoAST(id++, "else", @1.first_line, @1.first_column, []);}
+;
+
+//estructura whitch
+SWITCH: TK_SWITCH '(' SEXPRECION ')' '{' CASS '}'      {$$ = [$3, $6];}
+      | TK_SWITCH '(' SEXPRECION ')' '{' '}'            {$$ = [$3];}
+;
+
+SEXPRECION: EXPRECIONES        {$$ = new NodoAST.NodoAST( id++, "Exprecion", @1.first_line, @1.first_column, $1);}
+;
+
+CASS: CASES        {$$ = new NodoAST.NodoAST( id++, "Cases", @1.first_line, @1.first_column, $1);}
+;
+
+CASES: CASES CASE       {$$ = $1; $$.push($2);}
+     | CASE             {$$ = [$1];}
+;
+
+CASE: TK_CASE VALORES ':' TODOGENERAL   {$$ = new NodoAST.NodoAST( id++, "Case", @1.first_line, @1.first_column, [$2, $4]);}
+    | TK_CASE VALORES ':'               {$$ = new NodoAST.NodoAST( id++, "Case", @1.first_line, @1.first_column, [$2]);}
+    | TK_DEFAULT ':' TODOGENERAL        {$$ = new NodoAST.NodoAST( id++, "Default", @1.first_line, @1.first_column, [$3]);}
+    | TK_DEFAULT ':'                    {$$ = new NodoAST.NodoAST( id++, "Default", @1.first_line, @1.first_column, []);}
+;
