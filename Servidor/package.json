@@ -19,9 +19,11 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "predeploy": "node /JS/app.js",
-    "deploy": "gh-pages -d predeploy1",
-    "predeploy1": "go run ./Cliente/index.go"
+    "start": "react-script start",
+    "build": "react-script build",
+    "eject": "react-script eject",
+    "predeplay": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "repository": {
     "type": "git",
